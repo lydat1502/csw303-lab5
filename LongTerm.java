@@ -3,31 +3,30 @@ public class LongTerm implements Contract{
     private String PropertyID;
     private String TenantID;
     private String RentAmountID;
-    public LongTerm(String contractID, String propertyID, String tenantID, String rentAmountID) {
-        ContractID = contractID;
-        PropertyID = propertyID;
-        TenantID = tenantID;
-        RentAmountID = rentAmountID;
+
+    @Override
+    public void BuildContractID(String ContractID) {
+        this.ContractID = ContractID;
+        System.out.println("ContractID: "+ContractID);
     }
     @Override
-    public void BuildContractID() {
-       System.out.println("build by LongTerm with Contract ID: "+ContractID);
+    public void BuildPropertyID(String PropertyID) {
+        this.PropertyID = PropertyID;
+        System.out.println("PropertyID: "+PropertyID);
     }
     @Override
-    public void BuildPropertyID() {
-       System.out.println("build by LongTerm with Property ID: "+PropertyID);
+    public void BuildTenantID(String TenantID) {
+        this.TenantID = TenantID;
+        System.out.println("TenantID: "+TenantID);
     }
     @Override
-    public void BuildTenantID() {
-       System.out.println("build by LongTerm with Tenant ID: "+TenantID);
-    }
-    @Override
-    public void BuildRentAmountID() {
-       System.out.println("build by LongTerm with RentAmount ID: "+RentAmountID);
+    public void BuildRentAmountID(String RentAmountID) {
+        this.RentAmountID = RentAmountID;
+        System.out.println("RentAmountID: "+RentAmountID);
     }
     @Override
     public Contract SignContract() {
-        return null;
+       return new LongTerm();
     }
     
 }

@@ -1,33 +1,31 @@
 public class Permanent implements Contract{
     private String ContractID;
-    private String RentAmountID;
-    private String TenantID;
     private String PropertyID;
-    public Permanent(String contractID, String rentAmountID, String tenantID, String propertyID) {
-        ContractID = contractID;
-        RentAmountID = rentAmountID;
-        TenantID = tenantID;
-        PropertyID = propertyID;
+    private String TenantID;
+    private String RentAmountID;
+
+     @Override
+    public void BuildContractID(String ContractID) {
+        this.ContractID = ContractID;
+        System.out.println("ContractID: "+ContractID);
     }
     @Override
-    public void BuildContractID() {
-       System.out.println("build by Permanent with Contract ID: "+ContractID);
+    public void BuildPropertyID(String PropertyID) {
+        this.PropertyID = PropertyID;
+        System.out.println("PropertyID: "+PropertyID);
     }
     @Override
-    public void BuildPropertyID() {
-       System.out.println("build by Permanent with Property ID: "+PropertyID);
+    public void BuildTenantID(String TenantID) {
+        this.TenantID = TenantID;
+        System.out.println("TenantID: "+TenantID);
     }
     @Override
-    public void BuildTenantID() {
-       System.out.println("build by Permanent with Tenant ID: "+TenantID);
-    }
-    @Override
-    public void BuildRentAmountID() {
-       System.out.println("build by Permanent with RentAmount ID: "+RentAmountID);
+    public void BuildRentAmountID(String RentAmountID) {
+        this.RentAmountID = RentAmountID;
+        System.out.println("RentAmountID: "+RentAmountID);
     }
     @Override
     public Contract SignContract() {
-        return null;
+       return new Permanent();
     }
-    
 }
