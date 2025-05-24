@@ -1,3 +1,4 @@
+package assignment1;
 public interface Contract {
     void BuildContractID(String ContractID);
     void BuildPropertyID(String PropertyID);

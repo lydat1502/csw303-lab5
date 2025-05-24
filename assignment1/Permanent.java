@@ -1,4 +1,5 @@
-public class ShortTerm implements Contract{
+package assignment1;
+public class Permanent implements Contract{
     private String ContractID;
     private String PropertyID;
     private String TenantID;
@@ -26,7 +27,6 @@ public class ShortTerm implements Contract{
     }
     @Override
     public Contract SignContract() {
-       return new ShortTerm();
+       return new Permanent();
     }
-    
 }

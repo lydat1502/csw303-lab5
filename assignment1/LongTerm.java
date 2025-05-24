@@ -1,3 +1,4 @@
+package assignment1;
 public class LongTerm implements Contract{
     private String ContractID;
     private String PropertyID;
