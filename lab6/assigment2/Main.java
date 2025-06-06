@@ -1,33 +1,21 @@
-import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 class Message {
+
     private final String content;
     private final String sender;
     private final String recipient;
 
     public Message(String content, String sender, String recipient) {
-        // Note 1: Added input validation to prevent null or empty strings
-        if (content == null || content.trim().isEmpty()) {
-            throw new IllegalArgumentException("Content cannot be null or empty");
-        }
-        if (sender == null || sender.trim().isEmpty()) {
-            throw new IllegalArgumentException("Sender cannot be null or empty");
-        }
-        if (recipient == null || recipient.trim().isEmpty()) {
-            throw new IllegalArgumentException("Recipient cannot be null or empty");
-        }
         this.content = content;
         this.sender = sender;
         this.recipient = recipient;
     }
+// Getters for message properties
 
-    // Getters for message properties
     public String getContent() {
         return content;
     }
@@ -40,31 +28,35 @@ class Message {
         return recipient;
     }
 
-    // Note 2: Added toString for consistent output formatting
-    @Override
-    public String toString() {
-        return String.format("From: %s, To: %s, Content: %s", sender, recipient, content);
+    public void printSummary() {
+        printData(content, sender, recipient);
+    }
+    // thêm isfrom với containskey để tránh data class
+    public boolean isFrom(String name) {
+        return sender.equalsIgnoreCase(name);
     }
 
-    // Note 3: Modified print methods to use PrintStream for flexibility
-    // Note 4: Extracted common printing logic to avoid duplication
-    private void printCommonFields(PrintStream out) {
-        out.println(toString());
+    public boolean containsKeyword(String keyword) {
+        return content.toLowerCase().contains(keyword.toLowerCase());
     }
 
-    public void printSummary(PrintStream out) {
-        printCommonFields(out);
+    public void printDetails() {
+        printData(content, sender, recipient);
+        System.out.println("Content Length: " + content.length());
+        System.out.println("Sender Uppercase: " + sender.toUpperCase());
+        System.out.println("Recipient Lowercase: " + recipient.toLowerCase());
     }
 
-    public void printDetails(PrintStream out) {
-        printCommonFields(out);
-        out.println("Content Length: " + content.length());
-        out.println("Sender Uppercase: " + sender.toUpperCase());
-        out.println("Recipient Lowercase: " + recipient.toLowerCase());
+    // sửa duplicate
+    public static void printData(String content, String sender, String recipient){
+        System.out.println("Content: " + content);
+        System.out.println("Sender: " + sender);
+        System.out.println("Recipient: " + recipient);
     }
 }
 
-class MessagingService {
+class MessagingService{
+
     private final Map<String, List<Message>> inbox;
 
     public MessagingService() {
@@ -72,61 +64,49 @@ class MessagingService {
     }
 
     public void sendMessage(String content, String sender, String recipient) {
-        // Note 5: Validation moved to Message constructor, so no need here
         Message message = new Message(content, sender, recipient);
         inbox.computeIfAbsent(message.getRecipient(), k -> new ArrayList<>()).add(message);
     }
 
-    // Note 6: Return unmodifiable list to prevent external modification
     public List<Message> getMessagesForRecipient(String recipient) {
-        if (recipient == null || recipient.trim().isEmpty()) {
-            throw new IllegalArgumentException("Recipient cannot be null or empty");
-        }
-        return Collections.unmodifiableList(inbox.getOrDefault(recipient, new ArrayList<>()));
+        return inbox.getOrDefault(recipient, new ArrayList<>());
     }
 
-    // Note 7: Moved printing to MessagePrinter for SRP
-    public void printAllMessages(PrintStream out) {
-        MessagePrinter.printAllMessages(inbox, out);
-    }
-}
-
-// Note 8: Created MessagePrinter to separate printing responsibility
-class MessagePrinter {
-    public static void printAllMessages(Map<String, List<Message>> inbox, PrintStream out) {
+    public void printAllMessages() {
         for (String recipient : inbox.keySet()) {
-            for (Message message : inbox.get(recipient)) {
-                out.println(message.toString());
+            List<Message> messages = inbox.get(recipient);
+            for (Message message : messages) {
+                Message.printData(message.getContent(), message.getSender(), message.getRecipient());
             }
         }
     }
 }
 
 public class Main {
-    // Note 9: Replaced magic strings with a test data structure
-    private static final List<String[]> TEST_MESSAGES = Arrays.asList(
-        new String[]{"Hello, tenant!", "Property Manager", "Tenant A"},
-        new String[]{"Important notice: Rent due next week.", "Property Owner", "Tenant A"},
-        new String[]{"Maintenance request received.", "Tenant A", "Property Manager"}
-    );
-
     public static void main(String[] args) {
         MessagingService messagingService = new MessagingService();
-        // Note 10: Use test data for message sending
-        for (String[] msg : TEST_MESSAGES) {
-            messagingService.sendMessage(msg[0], msg[1], msg[2]);
-        }
-
-        // Note 11: Consistent output using toString
+        // sending messages
+        messagingService.sendMessage("Hello, tenant!", "Property Manager", "Tenant A");
+        messagingService.sendMessage("Important notice: Rent due next week.", "Property Owner", "Tenant A");
+        messagingService.sendMessage("Maintenance request received.",  "Tenant A", "Property Manager");
+        // retrieving messages for a recipient
         List<Message> tenantAMessages = messagingService.getMessagesForRecipient("Tenant A");
         for (Message message : tenantAMessages) {
-            System.out.println(message.toString());
+            System.out.println("From: " + message.getSender() + ", Content: " + message.getContent());
         }
-
-        // Note 12: Use PrintStream for flexibility
-        Message exampleMessage = new Message("Test", "Sender", "Recipient");
-        exampleMessage.printDetails(System.out);
-
-        messagingService.printAllMessages(System.out);
+        // Calling the new method
+        Message exampleMessage = new Message("Test", "Sender","Recipient");
+        exampleMessage.printDetails();
+        messagingService.printAllMessages();
     }
 }
+
+
+
+// lỗi dublicate
+
+// System.out.println("Content: " + content);
+// System.out.println("Sender: " + sender);
+// System.out.println("Recipient: " + recipient);
+
+//lỗi data class ở Message

@@ -1,21 +1,46 @@
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+
 import java.util.List;
 
-// Note 1: Introduced Address class to reduce data clump
-class Address {
-    private final String ownerName;
-    private final String location;
+class Property {
+    private String name;
+    private double rentAmount;
+    private PropertyInfo info;
 
-    public Address(String ownerName, String location) {
-        if (ownerName == null || ownerName.trim().isEmpty()) {
-            throw new IllegalArgumentException("Owner name cannot be null or empty");
-        }
-        if (location == null || location.trim().isEmpty()) {
-            throw new IllegalArgumentException("Location cannot be null or empty");
-        }
+    public Property(String name, double rentAmount, PropertyInfo info) { //Constructor with a data clump
+        this.name = name;
+        this.rentAmount = rentAmount;
+        this.info = info;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public double getRentAmount() {
+        return rentAmount;
+    }
+
+    public void printPropertyDetails() {
+        System.out.println("Property: " + name);
+        System.out.println("Rent Amount: $" + rentAmount);
+        System.out.println("Owner: " + info.getOwnerName());
+        System.out.println("Location: " + info.getLocation());
+    }
+    // new for long Method and switch case
+    public String getCategory() {
+        return rentAmount > 2000 ? "premium" : "standard";
+    }
+
+    public double getYearlyRent() {
+        return rentAmount * 12;
+    }
+}
+// add new class for data clump
+class PropertyInfo{
+    private String ownerName;
+    private String location;
+
+    public PropertyInfo(String ownerName, String location) {
         this.ownerName = ownerName;
         this.location = location;
     }
@@ -28,132 +53,53 @@ class Address {
         return location;
     }
 }
-
-class Property {
-    private final String name;
-    private final double rentAmount;
-    private final Address address;
-
-    public Property(String name, double rentAmount, Address address) {
-        // Note 2: Added input validation
-        if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Name cannot be null or empty");
-        }
-        if (rentAmount < 0) {
-            throw new IllegalArgumentException("Rent amount cannot be negative");
-        }
-        if (address == null) {
-            throw new IllegalArgumentException("Address cannot be null");
-        }
-        this.name = name;
-        this.rentAmount = rentAmount;
-        this.address = address;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public double getRentAmount() {
-        return rentAmount;
-    }
-
-    public Address getAddress() {
-        return address;
-    }
-
-    // Note 3: Added toString for consistent formatting
-    @Override
-    public String toString() {
-        return String.format("Property: %s, Rent Amount: $%.2f, Owner: %s, Location: %s",
-                name, rentAmount, address.getOwnerName(), address.getLocation());
-    }
-
-    // Note 4: Modified to use PrintStream
-    public void printPropertyDetails(PrintStream out) {
-        out.println(toString());
-    }
-}
-
 class FinancialReport {
-    private static final double PREMIUM_THRESHOLD = 2000.0; // Note 5: Constant for magic number
-    private static final String PREMIUM_LABEL = "This is a premium property.";
-    private static final String STANDARD_LABEL = "This is a standard property.";
 
-    private final String reportTitle;
-    private final List<Property> properties;
+    private static String separator = "--------------------";
+    private String reportTitle;
+    private List<Property> properties;
     private double totalRent;
 
     public FinancialReport(String reportTitle, List<Property> properties) {
-        // Note 6: Added validation and defensive copy
-        if (reportTitle == null || reportTitle.trim().isEmpty()) {
-            throw new IllegalArgumentException("Report title cannot be null or empty");
-        }
-        if (properties == null) {
-            throw new IllegalArgumentException("Properties list cannot be null");
-        }
         this.reportTitle = reportTitle;
-        this.properties = new ArrayList<>(properties); // Defensive copy
+        this.properties = properties;
     }
-
-    public double calculateTotalRent() {
-        // Note 7: Separated computation from presentation
+    public void printHeard(){
+        System.out.println("Financial Report: " + reportTitle);
+        System.out.println(separator);
+    }
+    public void printFoot(Property property){
+        double yearlyRent = property.getYearlyRent();
+        System.out.println("Yearly Rent: $" + yearlyRent);
+        System.out.println(separator);
+    }
+    public void generateReport() {
         totalRent = 0;
+        printHeard();
         for (Property property : properties) {
+            property.printPropertyDetails();
             totalRent += property.getRentAmount();
+            System.out.println("This is a "+property.getCategory()+" property.");
+            printFoot(property);
         }
-        return totalRent;
-    }
-
-    // Note 8: Moved printing to ReportPrinter
-    public void generateReport(PrintStream out) {
-        ReportPrinter.printReport(this, out);
-    }
-
-    public String getReportTitle() {
-        return reportTitle;
-    }
-
-    public List<Property> getProperties() {
-        return Collections.unmodifiableList(properties); // Note 9: Unmodifiable list
-    }
-
-    public double getTotalRent() {
-        return totalRent;
-    }
-}
-
-// Note 10: Created ReportPrinter for SRP
-class ReportPrinter {
-    private static final double PREMIUM_THRESHOLD = 2000.0;
-    private static final String PREMIUM_LABEL = "This is a premium property.";
-    private static final String STANDARD_LABEL = "This is a standard property.";
-
-    public static void printReport(FinancialReport report, PrintStream out) {
-        out.println("Financial Report: " + report.getReportTitle());
-        out.println("----------------------------");
-        for (Property property : report.getProperties()) {
-            property.printPropertyDetails(out);
-            out.println(property.getRentAmount() > PREMIUM_THRESHOLD ? PREMIUM_LABEL : STANDARD_LABEL);
-            double yearlyRent = property.getRentAmount() * 12;
-            out.println(String.format("Yearly Rent: $%.2f", yearlyRent));
-            out.println("--------------------");
-        }
-        out.println(String.format("Total Rent Amount: $%.2f", report.getTotalRent()));
+        System.out.println("Total Rent Amount: $" + totalRent);
     }
 }
 
 public class ReportGenerator {
-    // Note 11: Replaced magic data with test data structure
-    private static final List<Property> TEST_PROPERTIES = Arrays.asList(
-        new Property("Apartment A", 1500.0, new Address("John Doe", "City Center")),
-        new Property("House B", 2000.0, new Address("Jane Smith", "Suburb")),
-        new Property("Condo C", 1800.0, new Address("Bob Johnson", "Downtown"))
-    );
 
     public static void main(String[] args) {
-        FinancialReport financialReport = new FinancialReport("Monthly Rent Summary", TEST_PROPERTIES);
-        financialReport.calculateTotalRent(); // Note 12: Calculate before printing
-        financialReport.generateReport(System.out);
+        PropertyInfo info1 = new PropertyInfo("John Doe", "City Center");
+        Property property1 = new Property("Apartment A", 1500.0, info1);
+        PropertyInfo info2 = new PropertyInfo("Jane Smith", "Suburb");
+        Property property2 = new Property("House B", 2000.0, info2);
+        PropertyInfo info3 = new PropertyInfo("Bob Johnson", "Downtown");
+        Property property3 = new Property("Condo C", 1800.0, info3);
+        FinancialReport financialReport = new FinancialReport("Monthly Rent Summary", List.of(property1, property2, property3));
+        financialReport.generateReport();
     }
 }
+
+// data clump in Property
+// Long Method in generateReport
+// Switch/Conditional if else
